@@ -8,8 +8,9 @@ import processing.video.*;
 import org.json.*;
 
 Capture cam;
-PImage[] images;
-int pointer;
+Map<char, int> gTransitionMap;
+Map<int, Screen> transitionMap;
+Screen curScreen;
 
 void setup() {
   size(640, 480);
@@ -19,13 +20,11 @@ void setup() {
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
     exit();
-  } 
-  else {
+  } else {
     println("Available cameras:");
     for (int i = 0; i < cameras.length; i++) {
       println(cameras[i]);
     }
-
     cam = new Capture(this, cameras[0]);
     
     // Start capturing the images from the camera
@@ -36,29 +35,35 @@ void setup() {
 }
 
 void draw() {
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available() == true) cam.read();
   set(0, 0, cam);
-  image(images[pointer], 0, 0);
+  image(curScreen.img, 0, 0);
 }
 
-void setupScreens() {
-  images = new PImage[4];
+void setupScreens() {  
+  JSON json = JSON.load(dataPath("proto.json"));
   
-  for (int i = 0; i < 4; i++) {
-     images[i] = loadImage("proto_"+ (i+1) + ".png");
+  //for each global transition
+  JSONArray global = json.getArray("global");
+  for (int i = 0; i < global.length(); i++) {
+     JSONObject obj = global.getJSONObj(i);
+     gTransitionMap.put(obj.get('key'), obj.get('id')); 
   }
-  pointer = 0;
   
-  //JSON json = JSON.load(dataPath("data.json"));
+  //for each screen
+  JSONArray screens = json.getArray("screens");
+  for (int i = 0; i < screens.length(); i++) {
+     JSONObject obj = screens.getJSONObj(i);
+     transitionMap.put(obj.get('id'), new Screen(obj)); 
+  }
+  
+  //set the starting image
 }
 
 void keyPressed() {
-  try{
-    int k = key-48;
-    if (k > 0 && k <= 4) pointer = k-1;        
-  } catch (Exception e) {
-   
+  if (gTransitionMap.contains(key)) {
+      curScreen = transitionMap.get(gTransitionMap.get(key));
+  } else if (curScreen.transitions.contains(key)) {
+      curScreen = transitionMap.get(curScreen.transitions.get(key)); 
   }
 }
