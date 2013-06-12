@@ -1,0 +1,83 @@
+{
+	"global": [
+		{
+			"key": 'm',
+			"id": 0
+		}
+	],
+	"screens": [
+		{
+			"id": 1,
+			"url": "screens/proto_1.png",
+			"transitions": [
+				{
+					"key": 'a',
+					"id": 2
+				},
+				{
+					"key": 's',
+					"id": 3
+				},
+				{
+					"key": 'd',
+					"id": 4
+				}
+			]
+		},
+		{
+			"id": 2,
+			"url": "screens/proto_2.png",
+			"transitions": [
+				{
+					"key": 'a',
+					"id": 1
+				},
+				{
+					"key": 's',
+					"id": 3
+				},
+				{
+					"key": 'd',
+					"id": 4
+				}
+			]
+		},
+		{
+			"id": 3,
+			"url": "screens/proto_3.png",
+			"transitions": [
+				{
+					"key": 'a',
+					"id": 1
+				},
+				{
+					"key": 's',
+					"id": 2
+				},
+				{
+					"key": 'd',
+					"id": 4
+				}
+			]
+		},
+		{
+			"id": 4,
+			"url": "screens/proto_4.png",
+			"transitions": [
+				{
+					"key": 'a',
+					"id": 1
+				},
+				{
+					"key": 's',
+					"id": 2
+				},
+				{
+					"key": 'd',
+					"id": 3
+				}
+			]
+		}
+	],
+	"start": 1
+}

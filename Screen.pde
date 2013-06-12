@@ -1,37 +1,24 @@
 import org.json.*;
+import java.util.HashMap;
+import java.util.Map;
 
 class Screen {
   
   int id;
-  String name;
   String url;
   PImage img;
-  Map<char, int> transitions;
+  Map<Character, Integer> transitions;
   
-  
-  Screen(int id, String name, String url) {
-    this.id = id;
-    this.name = name;
-    this.url = url;
-    img = loadImage(url);
-    transitions = new HashMap<char, int>();
-  }
-  
-  Screen(JSON json) {
-    this.id = json.getInt('id');
-    this.name = json.getString('name');
-    this.url = json.getString('url');
-    img = loadImage(url);
-    JSONArray trans = json.getArray('transitions');
+  Screen(JSON json, PApplet parent) {
+    this.id = json.getInt("id");
+    this.url = json.getString("url");
+    this.img = parent.loadImage(url);
+    this.transitions = new HashMap<Character, Integer>();
+    
+    JSON trans = json.getArray("transitions");
     for (int i = 0; i < trans.length(); i++) {
-      JSONObject curObj = trans.getJSONObj(i);
-      transitions.put(curObj.get('key'), curObj.get('id'));
+      JSON curObj = trans.getJSON(i);
+      this.transitions.put(curObj.getString("key").charAt(0), curObj.getInt("id"));
     }
   }
-
-  void addTransition(char c, int i) {
-     transitions.put(c, i);
-  }
-  
-  
 }

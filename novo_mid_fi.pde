@@ -6,10 +6,13 @@
 
 import processing.video.*;
 import org.json.*;
+import java.util.Map;
+import java.util.HashMap;
+
 
 Capture cam;
-Map<char, int> gTransitionMap;
-Map<int, Screen> transitionMap;
+Map<Character, Integer> globalTransitions;
+Map<Integer, Screen> screenMap;
 Screen curScreen;
 
 void setup() {
@@ -40,30 +43,35 @@ void draw() {
   image(curScreen.img, 0, 0);
 }
 
-void setupScreens() {  
-  JSON json = JSON.load(dataPath("proto.json"));
-  
-  //for each global transition
-  JSONArray global = json.getArray("global");
-  for (int i = 0; i < global.length(); i++) {
-     JSONObject obj = global.getJSONObj(i);
-     gTransitionMap.put(obj.get('key'), obj.get('id')); 
-  }
-  
-  //for each screen
-  JSONArray screens = json.getArray("screens");
-  for (int i = 0; i < screens.length(); i++) {
-     JSONObject obj = screens.getJSONObj(i);
-     transitionMap.put(obj.get('id'), new Screen(obj)); 
-  }
-  
-  //set the starting image
+void setupScreens() {
+    globalTransitions = new HashMap<Character, Integer>();
+    screenMap = new HashMap<Integer, Screen>();
+    
+    JSON json = JSON.load(dataPath("proto.json"));
+    
+    //for each global transition
+    JSON global = json.getArray("global");
+    for (int i = 0; i < global.length(); i++) {
+      JSON obj = global.getJSON(i);
+       globalTransitions.put(obj.getString("key").charAt(0), obj.getInt("id")); 
+    }
+    
+    //for each screen
+    JSON screens = json.getArray("screens");
+    for (int i = 0; i < screens.length(); i++) {
+      JSON obj = screens.getJSON(i);
+       screenMap.put(obj.getInt("id"), new Screen(obj, this)); 
+    }
+    
+    //set the starting image
+    curScreen = screenMap.get(json.getInt("start"));
 }
 
 void keyPressed() {
-  if (gTransitionMap.contains(key)) {
-      curScreen = transitionMap.get(gTransitionMap.get(key));
-  } else if (curScreen.transitions.contains(key)) {
-      curScreen = transitionMap.get(curScreen.transitions.get(key)); 
-  }
+    if (globalTransitions.containsKey(key)) {
+        curScreen = screenMap.get(globalTransitions.get(key));
+    } else if (curScreen.transitions.containsKey(key)) {
+        curScreen = screenMap.get(curScreen.transitions.get(key)); 
+    } 
 }
+
